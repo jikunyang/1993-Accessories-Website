@@ -1,0 +1,22 @@
+{
+  "name": "1993-accessories-website",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "parcel app.js --hmr-port 50619"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jikunyang/1993-Accessories-Website.git"
+  },
+  "author": "Kun",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jikunyang/1993-Accessories-Website/issues"
+  },
+  "homepage": "https://github.com/jikunyang/1993-Accessories-Website#readme",
+  "dependencies": {
+    "parcel": "^2.12.0"
+  }
+}
