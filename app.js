@@ -1,1 +1,3 @@
-//import'./index.html';
+import loadCanvas from '/js/canvas.js';
+
+loadCanvas();

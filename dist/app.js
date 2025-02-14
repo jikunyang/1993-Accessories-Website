@@ -584,7 +584,144 @@ function hmrAccept(bundle /*: ParcelRequire */ , id /*: string */ ) {
 }
 
 },{}],"igcvL":[function(require,module,exports) {
-//import'./index.html';
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+var _canvasJs = require("/js/canvas.js");
+var _canvasJsDefault = parcelHelpers.interopDefault(_canvasJs);
+(0, _canvasJsDefault.default)();
+
+},{"/js/canvas.js":"13tVG","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"13tVG":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+var _shaderJs = require("/shader.js");
+var _shaderJsDefault = parcelHelpers.interopDefault(_shaderJs);
+const loadCanvas = ()=>{
+    // Ensure the DOM is fully loaded before executing the script
+    document.addEventListener("DOMContentLoaded", function() {
+        // Select the canvas element
+        const canvas = document.getElementById("canvas");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        // Create a new GlslCanvas instance
+        const sandbox = new GlslCanvas(canvas);
+        // Load the shader code
+        sandbox.load((0, _shaderJsDefault.default));
+        // Create a WebGL texture with GL_NEAREST filtering
+        // Set the texture to GlslCanvas
+        sandbox.setUniform("bgImage", "https://uploads-ssl.webflow.com/669ca40edd7e9603b944e526/669cc39ebac66066286a3326_bg-min.avif");
+        // Mouse move event listener
+        canvas.addEventListener("mousemove", (e)=>{
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+            sandbox.setUniform("u_mouse", [
+                mouseX,
+                mouseY
+            ]);
+        });
+    });
+};
+exports.default = loadCanvas;
+
+},{"/shader.js":"hQZxj","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"hQZxj":[function(require,module,exports) {
+// GLSL fragment shader code
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+const frag = `
+             #ifdef GL_ES
+precision highp float;
+#endif
+
+uniform float u_time;
+uniform vec2 u_resolution;
+uniform vec2 u_mouse;
+uniform vec3 spectrum;
+
+uniform sampler2D bgImage;
+
+varying vec3 v_normal;
+varying vec2 v_texcoord;
+
+#define NUM_OCTAVES 5
+
+float rand(vec2 n) { 
+    return fract(sin(dot(n, vec2(12.9898, 4.1414))) * 43758.5453);
+}
+
+float noise(vec2 p){
+    vec2 ip = floor(p);
+    vec2 u = fract(p);
+    u = u*u*(3.0-2.0*u);
+    
+    float res = mix(
+        mix(rand(ip),rand(ip+vec2(1.0,0.0)),u.x),
+        mix(rand(ip+vec2(0.0,1.0)),rand(ip+vec2(1.0,1.0)),u.x),u.y);
+    return res*res;
+}
+
+float fbm(vec2 x) {
+    float v = 0.0;
+    float a = 0.5;
+    vec2 shift = vec2(100);
+    // Rotate to reduce axial bias
+    mat2 rot = mat2(cos(0.5), sin(0.5), -sin(0.5), cos(0.50));
+    for (int i = 0; i < NUM_OCTAVES; ++i) {
+        v += a * noise(x);
+        x = rot * x * 2.0 + shift;
+        a *= 0.5;
+    }
+    return v;
+}
+
+
+void main(void)
+{    vec2 uv = v_texcoord;
+                vec2 mouse = (u_mouse / u_resolution * 2.0 - 1.0) * 0.1; // Scale down the mouse influence
+
+       
+       float strength = smoothstep(0.2,1.5, 0.5);
+    
+    vec2 surface = strength* vec2(
+        mix(-0.3, 0.8, fbm(5.0 * uv + 0.2 * u_time + mouse *1.5)),
+        mix(-1.0, 0.8, fbm(10.0 * uv + 0.2 * u_time + mouse *-0.5))
+    );
+        
+        uv += refract(vec2(0.0, 0.0), surface, 1.0 / 1.333);
+        vec4 bg = texture2D(bgImage, uv);
+        
+        gl_FragColor = vec4(bg.rgb, 1.0);
+}
+            `;
+exports.default = frag;
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gkKU3":[function(require,module,exports) {
+exports.interopDefault = function(a) {
+    return a && a.__esModule ? a : {
+        default: a
+    };
+};
+exports.defineInteropFlag = function(a) {
+    Object.defineProperty(a, "__esModule", {
+        value: true
+    });
+};
+exports.exportAll = function(source, dest) {
+    Object.keys(source).forEach(function(key) {
+        if (key === "default" || key === "__esModule" || Object.prototype.hasOwnProperty.call(dest, key)) return;
+        Object.defineProperty(dest, key, {
+            enumerable: true,
+            get: function() {
+                return source[key];
+            }
+        });
+    });
+    return dest;
+};
+exports.export = function(dest, destName, get) {
+    Object.defineProperty(dest, destName, {
+        enumerable: true,
+        get: get
+    });
+};
 
 },{}]},["7XE4H","igcvL"], "igcvL", "parcelRequire6a65")
 
